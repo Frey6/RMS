@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SystemManage.ResourceManage.dao.ResourceDao">
+    <resultMap id="BaseResultMap" type="SystemManage.ResourceManage.entity.Resource">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="permission" property="permission" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="icon" property="icon" jdbcType="VARCHAR"/>
+        <result column="pid" property="pid" jdbcType="BIGINT"/>
+        <result column="seq" property="seq" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="resourcetype" property="resourcetype" jdbcType="TINYINT"/>
+        <result column="createdate" property="createdate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, name, url, permission, description, icon, pid, seq, status, resourcetype, createdate
+    </sql>
+
+    <select id="findResourceById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from resource
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 查询所有父菜单 -->
+    <select id="findResourceAllByTypeAndPidNull" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select distinct
+        <include refid="Base_Column_List"/>
+        from resource
+        where resourcetype = #{resourceType}
+        and pid is null order by seq
+    </select>
+
+    <select id="findResourceAllByTypeAndPid" resultMap="BaseResultMap">
+        select distinct
+        <include refid="Base_Column_List"/>
+        from resource
+        where resourcetype = #{resourceType}
+        and pid = #{pid} order by seq
+    </select>
+
+    <select id="findResourceAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from resource order by seq
+    </select>
+
+    <delete id="deleteResourceById" parameterType="java.lang.Long">
+        delete from resource
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="Resource">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into resource (name, url, permission, description,
+        icon, pid, seq, status,
+        resourcetype, createdate)
+        values (#{name,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},#{permission,jdbcType=VARCHAR},
+        #{description,jdbcType=VARCHAR},#{icon,jdbcType=VARCHAR}, #{pid,jdbcType=BIGINT},
+        #{seq,jdbcType=TINYINT}, #{status,jdbcType=TINYINT},#{resourcetype,jdbcType=TINYINT}, now())
+    </insert>
+
+    <update id="updateResource" parameterType="Resource">
+        update resource
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="permission != null">
+                permission = #{permission,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null">
+                icon = #{icon,jdbcType=VARCHAR},
+            </if>
+            pid = #{pid,jdbcType=BIGINT},
+            <if test="seq != null">
+                seq = #{seq,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="resourcetype != null">
+                resourcetype = #{resourcetype,jdbcType=TINYINT},
+            </if>
+            <if test="createdate != null">
+                createdate = now(),
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

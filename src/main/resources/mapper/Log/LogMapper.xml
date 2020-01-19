@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SystemManage.LogManage.dao.LogDao" >
+  <resultMap id="BaseResultMap" type="SystemManage.LogManage.entity.Log" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="loginName" property="loginName" jdbcType="VARCHAR" />
+    <result column="operationName" property="operationName" jdbcType="VARCHAR" />
+    <result column="operationClass" property="operationClass" jdbcType="VARCHAR" />
+    <result column="operationAddress" property="operationAddress" jdbcType="VARCHAR" />
+    <result column="params" property="params" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, loginName, operationName,operationClass, operationAddress, params, ip, createTime
+  </sql>
+
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from syslog
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="findDataGrid" resultMap="BaseResultMap" parameterType="PageInfo">
+    select
+    <include refid="Base_Column_List" />
+    from syslog
+    <where>
+      <if test=" condition.operationName != null and condition.operationName != '' ">
+          operationName like '%${condition.operationName}%'
+      </if>
+      <if test="condition.startTime != null">
+        <![CDATA[
+            and createTime >= #{condition.startTime}
+         ]]>
+      </if>
+      <if test="condition.endTime != null">
+        <![CDATA[
+            and createTime <= #{condition.endTime}
+        ]]>
+      </if>
+    </where>
+    order by createTime desc
+    limit #{from}, #{size}
+  </select>
+
+  <select id="findDataGridCount" resultType="java.lang.Integer" parameterType="PageInfo">
+    select count(*) count
+    from syslog
+    <where>
+      <if test=" condition.operationName != null and condition.operationName != '' ">
+        operationName like '%${condition.operationName}%'
+      </if>
+      <if test="condition.startTime != null">
+        <![CDATA[
+            and createTime >= #{condition.startTime}
+         ]]>
+      </if>
+      <if test="condition.endTime != null">
+        <![CDATA[
+            and createTime <= #{condition.endTime}
+        ]]>
+      </if>
+    </where>
+  </select>
+
+  <insert id="insert" parameterType="SystemManage.LogManage.entity.Log" >
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into syslog (loginName, operationName, operationClass,operationAddress, params, ip, createTime)
+    values (#{loginName,jdbcType=VARCHAR}, #{operationName,jdbcType=VARCHAR},#{operationClass,jdbcType=VARCHAR},
+    #{operationAddress,jdbcType=VARCHAR},  #{params,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <!--批量删除-->
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from syslog
+    <where>
+      id in
+      <foreach collection="list" item="item" separator="," open="(" close=")">
+        #{item,jdbcType=VARCHAR}
+      </foreach>
+    </where>
+  </delete>
+
+  <select id="delLogCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+    select count(*) count
+    from syslog
+    where <![CDATA[ createTime <= #{createTime} ]]>
+  </select>
+  <delete id="delByDate" parameterType="java.lang.String">
+    delete from syslog
+    where <![CDATA[ createTime <= #{createTime} ]]>
+  </delete>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SystemManage.LogChartCount.dao.LogChartDao" >
+
+    <select id="findLogSum" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(1) as count
+        from syslog
+        WHERE
+        createTime like '%${startTime}%'
+    </select>
+
+    <select id="findDayLogCount" parameterType="java.util.Map" resultType="java.util.Map">
+        select HOUR(createTime) as hour,count(1) as count
+        from syslog
+        WHERE
+        createTime like '%${startTime}%'
+        GROUP BY HOUR(createTime)
+        ORDER BY HOUR(createTime)
+    </select>
+
+    <select id="findMonthLogCount" parameterType="java.util.Map" resultType="java.util.Map">
+        select DAY(createTime) as day,count(1) as count
+        from syslog
+        WHERE
+        createTime like '%${startTime}%'
+        GROUP BY DAY(createTime)
+        ORDER BY DAY(createTime)
+    </select>
+
+    <select id="findYearLogCount" parameterType="java.util.Map" resultType="java.util.Map">
+        select MONTH(createTime) as month,count(1) as count
+        from syslog
+        WHERE
+        createTime like '%${startTime}%'
+        GROUP BY MONTH(createTime)
+        ORDER BY MONTH(createTime)
+    </select>
+
+</mapper>

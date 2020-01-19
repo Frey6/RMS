@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SystemManage.RoleManage.dao.RoleResourceDao">
+    <!-- 在这里重新记录一遍,希望以后不要忘记,
+            column表示的是数据库中的字段名, property表示的是javabean(实体层)中的属性名 -->
+    <resultMap id="BaseResultMap" type="SystemManage.RoleManage.entity.RoleResource">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="role_id" property="roleId" jdbcType="BIGINT"/>
+        <result column="resource_id" property="resourceId" jdbcType="BIGINT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, role_id, resource_id
+    </sql>
+
+    <select id="findRoleResourceIdListByRoleId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT
+        e.id AS id
+        FROM
+        role r
+        LEFT JOIN role_resource e ON r.id = e.role_id
+        WHERE
+        r.id = #{id}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from role_resource
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="batchDelete" parameterType="java.util.List">
+        delete from role_resource
+        <where>
+            id in
+            <foreach collection="list" item="item" separator="," open="(" close=")">
+                #{item,jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </delete>
+
+    <insert id="insert" parameterType="SystemManage.RoleManage.entity.RoleResource">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into role_resource (role_id, resource_id)
+        values (#{roleId,jdbcType=BIGINT}, #{resourceId,jdbcType=BIGINT})
+    </insert>
+
+    <!-- 批量新增 -->
+    <insert id="batchInsert" parameterType="SystemManage.RoleManage.entity.RoleResource">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into role_resource (role_id, resource_id)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.roleId,jdbcType=BIGINT}, #{item.resourceId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+</mapper>

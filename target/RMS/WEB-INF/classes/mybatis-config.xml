@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+         <!--打印查询语句-->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <!--<setting name="logImpl" value="LOG4J" />-->
+    </settings>
+
+    <!-- 进行mybatis 配置 -->
+    <typeAliases>
+        <!-- 为类型 起了别名 -->
+        <typeAlias type="SystemManage.Common.until.PageInfo" alias="PageInfo"/>
+        <typeAlias type="SystemManage.UserManage.entity.User" alias="User"/>
+        <typeAlias type="SystemManage.ResourceManage.entity.Resource" alias="Resource"/>
+        <typeAlias type="SystemManage.RoleManage.entity.Role" alias="Role"/>
+        <typeAlias type="SystemManage.OrganizationManage.entity.Organization" alias="Organization"/>
+        <typeAlias type="SystemManage.UserManage.entity.UserRole" alias="UserRole"/>
+    </typeAliases>
+
+</configuration>
